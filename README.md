@@ -1,8 +1,8 @@
 # Requirements of E-voting system
 This electronic voting system is focused on citizen participation. Following are
 the various requirement for electron voting. These requirements where gathered
-after various discussion with Ralp who is currently working on e-voting system
-for Gemeente groningen.
+after various discussion with experts who are currently working on e-voting system.
+
 1. The authentication of a citizen based on citizen id (authentication).
 2. The verication of the authorized citizen based on age, location. The
 attribute responsible for verication can be changed later as future en-

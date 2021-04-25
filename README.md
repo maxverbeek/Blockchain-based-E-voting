@@ -21,4 +21,4 @@ counted (individually veriable).
 4. Verication of vote to avoid undermining trust.
 5. Voting should be coercion resistant.
 6. Scaling up fraud or bugs to manipulate the results.
-7. Process is dicult to understand.
+7. Process is difficult to understand.

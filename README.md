@@ -22,3 +22,5 @@ counted (individually veriable).
 5. Voting should be coercion resistant.
 6. Scaling up fraud or bugs to manipulate the results.
 7. Process is difficult to understand.
+
+Note - eVotingnode is forked and tweaked to the user requirement from https://gitlab.com/blockchainlabdrenthe/nodeSSA.

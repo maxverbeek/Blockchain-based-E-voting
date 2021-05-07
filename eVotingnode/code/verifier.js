@@ -146,7 +146,7 @@ function loadAttendeeTokens(mamAttendeeMessage) {
 }
 
 function checkAttended(ID, idList) {
-  // check if attendeeID is on the list of registeredIDs
+  // check if voterID is on the list of registeredIDs
   if (idList.indexOf(ID) === -1) {
     console.log(`ID : ${ID} was NOT registered at this event!`.brightRed);
     return false;

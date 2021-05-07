@@ -31,18 +31,20 @@ let publicEventRoot = "";
 let attendancyAddress = "";
 let expdatetime = "";
 let eventInformation = "";
+let walletState;
+let evotingAddress ="";
 
 // Personal information to calculate the Merkle-root
-const personalFirstName = "Jaden";
+const personalFirstName = "Rock";
 const personalSurname = "Smith";
 const personalGender = "Male";
-const personalBirthdate = "19980820";
+const personalBirthdate = "08201999";
 const personalMail = "robertsmith@gmail.com";
 const personalDID = "did:example:123456789abcdefghi#key-1";
 const organisation = "International Red Cross";
 // for demo-purpose
 const personalMerkleRoot =
-  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q7";
+  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q3";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -160,7 +162,7 @@ function saveInfoToWallet() {
   console.log("Save data to wallet >>>>>>>>".green);
   try {
     fs.writeFileSync(
-      "./json/personalWallet.json",
+      "./json/personalWallet2.json",
       JSON.stringify(payload, undefined, "\t")
     );
   } catch (e) {
@@ -193,13 +195,20 @@ async function mamInteract(eventQR,personalGender) {
   }
   
   // claim varefication can be done here before storing it into wallet
-  if(personalGender=="Male"){
+  const age_requirement = 18;
+  const year_requirement = new Date().getFullYear();
+
+  if(year_requirement-age_requirement > parseInt(personalBirthdate.substr(personalBirthdate.length - 4), 10)){
     console.log("Claim verification success".green);
   }else{
     console.log("Claim verification failed".red);
     return;
   }
 
+  // checking if the citizen is voting again
+
+
+  
   await readPublicEventInfo(publicEventRoot);
   presentEventInfo(eventInformation);
 
@@ -226,7 +235,7 @@ async function mamInteract(eventQR,personalGender) {
   // console.log("===========");
 
   const payload0 = {
-    attendeeID: merkleHash2,
+    voterID: merkleHash2,
     remark: payloadRemark, //HINT optional, can remain empty. Will be striped by closeevent.
     timestamp: new Date().toLocaleString(),
   };
@@ -249,8 +258,7 @@ async function mamInteract(eventQR,personalGender) {
     a: bufferToHex(encrypted2.iv),
     b: bufferToHex(encrypted2.ephemPublicKey),
     c: bufferToHex(encrypted2.ciphertext),
-    d: bufferToHex(encrypted2.mac),
-    e: "ho",
+    d: bufferToHex(encrypted2.mac)
   };
   //DEBUGINFO
   // console.log("enc2");

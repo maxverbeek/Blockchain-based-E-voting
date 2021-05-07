@@ -172,27 +172,45 @@ async function detailedList(attendeeIndex) {
   // show list of attendees with details
   const idList = [];
   const aList = await attendeeList(attendeeIndex);
-  // readAttendeeRecord, decrypt, extract AttendeeID, timestamp
+  // readAttendeeRecord, decrypt, extract voterID, timestamp
   for (let i = 0; i < aList.count; i++) {
     let attendeeToken = await getAttendee(aList.messageIds[i]);
     let aTokenJson = JSON.parse(attendeeToken);
-    console.log(aTokenJson);
-    if (idList.indexOf(aTokenJson.attendeeID) === -1) {
-      idList.push(aTokenJson.attendeeID);
+    //console.log(aTokenJson);
+    if (idList.indexOf(aTokenJson.voterID) === -1) {
+      idList.push(aTokenJson.voterID);
       console.log(
-        `${i + 1} : ${aList.messageIds[i]} \n\t ${aTokenJson.attendeeID} - ${
+        `${i + 1} : ${aList.messageIds[i]} \n\t ${aTokenJson.voterID} - ${
           aTokenJson.remark
         } - ${aTokenJson.timestamp}`
       );
     } else {
       console.log(
         `${i + 1} : ${aList.messageIds[i]} - DOUBLE ID - \n\t ${
-          aTokenJson.attendeeID
+          aTokenJson.voterID
         } - ${aTokenJson.remark} - ${aTokenJson.timestamp}`.brightRed
       );
     }
   }
   console.log(`Total unique IDs : ${idList.length} =========`.green);
+}
+
+async function voterList(attendeeIndex) {
+  // show list of attendees with details
+  const idList = [];
+  const aList = await attendeeList(attendeeIndex);
+  // readAttendeeRecord, decrypt, extract voterID, timestamp
+  for (let i = 0; i < aList.count; i++) {
+    let attendeeToken = await getAttendee(aList.messageIds[i]);
+    let aTokenJson = JSON.parse(attendeeToken);
+    //console.log(aTokenJson);
+    if (idList.indexOf(aTokenJson.voterID) === -1) {
+      idList.push(aTokenJson.voterID);
+      console.log(
+        `${i + 1} : \t ${aTokenJson.voterID} - ${aTokenJson.timestamp}`);
+    }
+  }
+  console.log(`Total unique voting IDs : ${idList.length} =========`.green);
 }
 
 async function writeCloseMessage(mamChannelState) {
@@ -243,13 +261,13 @@ async function closeEvent(attendeeIndex) {
 
   const attList = [];
   const aList = await attendeeList(attendeeIndex);
-  // readAttendeeRecord, decrypt, extract AttendeeID, add2List
+  // readAttendeeRecord, decrypt, extract voterID, add2List
   for (let i = 0; i < aList.count; i++) {
     let attendeeToken = await getAttendee(aList.messageIds[i]);
     let aTokenJson = JSON.parse(attendeeToken);
     // add to list if unique
-    if (attList.indexOf(aTokenJson.attendeeID) === -1) {
-      attList.push(aTokenJson.attendeeID);
+    if (attList.indexOf(aTokenJson.voterID) === -1) {
+      attList.push(aTokenJson.voterID);
     }
   }
   // appendAttendeeList2MAM
@@ -326,7 +344,7 @@ async function officialAttendeeList() {
   console.log(`Getattendees ===========`.red);
   let aList = [];
   //DEBUGINFO
-  // console.log("Fetching attendeeIDs from tangle with this information :");
+  // console.log("Fetching voterIDs from tangle with this information :");
   // console.log(`Node : ${node}`.yellow);
   // console.log(`EventRoot : ${nextMAMRoot}`.yellow);
   // console.log(`mode : ${mode}`.yellow);
@@ -385,9 +403,12 @@ async function run() {
   console.log("=================================================".green);
   let theEnd = false;
   while (!theEnd) {
-    let promptString = "Menu: [t]-Tanglelist, [d]-detailedTanglelist";
+    let promptString = "Menu: [v]-voterlist, [d]-detailedTanglelist";
     promptString += mamOpen ? ", [c]-close" : ",  [a]-attendeelist";
     promptString += ", [q]-quit : ";
+    // let promptString = "Menu: [t]-Tanglelist, [d]-detailedTanglelist , [v]-voterlist";
+    // promptString += mamOpen ? ", [c]-close" : ",  [a]-attendeelist";
+    // promptString += ", [q]-quit : ";
     let menuChoice = prompt(promptString.yellow);
     if (menuChoice == "t") {
       // show current list of transactions on the Tangle
@@ -396,6 +417,10 @@ async function run() {
     if (menuChoice == "d") {
       // show the details of the current transactions on the Tangle
       await detailedList(attendancyAddress);
+    }
+    if (menuChoice == "v") {
+      // show the current list of voter on the Tangle
+      await voterList(attendancyAddress);
     }
     if (menuChoice == "a" && !mamOpen) {
       // show the list of official decrypted attendeeTokens

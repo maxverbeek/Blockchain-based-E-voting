@@ -45,7 +45,7 @@ const personalDID = "did:example:123456789abcdefghi#key-1";
 const organisation = "International Red Cross";
 // for demo-purpose
 const personalMerkleRoot =
-  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q5";
+  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q0";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -229,7 +229,7 @@ async function mamInteract(eventQR,personalGender) {
     return;
   }
 
-  const payloadRemark = prompt(`Optional remark : `.cyan);
+  //const payloadRemark = prompt(`Optional remark : `.cyan);
 
   //TODO hashPersonalInfo
   // setup&calculate merkle-root
@@ -246,7 +246,8 @@ async function mamInteract(eventQR,personalGender) {
 
   const payload0 = {
     voterID: merkleHash2,
-    remark: payloadRemark, //HINT optional, can remain empty. Will be striped by closeevent.
+    votingchoice:evotingChoice,
+    //remark: payloadRemark, //HINT optional, can remain empty. Will be striped by closeevent.
     timestamp: new Date().toLocaleString(),
   };
 

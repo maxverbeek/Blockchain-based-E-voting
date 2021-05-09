@@ -250,7 +250,7 @@ async function writeCloseMessage(mamChannelState) {
   );
   console.log(`Message Id`, messageId);
   console.log(
-    `You can view the mam channel here \n https://explorer.iota.org/chrysalis/streams/0/${mamCloseMessage.root}/${mode}/${sideKey}`
+    `You can view the mam channel here \n https://explorer.iota.org/testnet/streams/0/${mamCloseMessage.root}/${mode}/${sideKey}`
   );
 }
 
@@ -306,7 +306,7 @@ async function closeEvent(attendeeIndex) {
   const { messageId } = await mamAttach(node, mamMessage, "SSA9EXPERIMENT");
   console.log(`Message Id`, messageId);
   console.log(
-    `You can view the mam channel here \n https://explorer.iota.org/chrysalis/streams/0/${mamMessage.root}/${mode}/${sideKey}`
+    `You can view the mam channel here \n https://explorer.iota.org/testnet/streams/0/${mamMessage.root}/${mode}/${sideKey}`
   );
   console.log("===============================".yellow);
   await writeCloseMessage(channelState);
@@ -377,9 +377,9 @@ async function officialAttendeeList() {
     }
   }
   for (const x in aList) {
-    console.log(`AttendeeToken ${1 + parseInt(x)} : ${aList[x]}`);
+    console.log(`Voter Token ${1 + parseInt(x)} : ${aList[x]}`);
   }
-  console.log(`Total attendees : ${aList.length}`.green);
+  console.log(`Total voter : ${aList.length}`.green);
 }
 
 async function run() {
@@ -403,8 +403,8 @@ async function run() {
   console.log("=================================================".green);
   let theEnd = false;
   while (!theEnd) {
-    let promptString = "Menu: [v]-voterlist, [d]-detailedTanglelist";
-    promptString += mamOpen ? ", [c]-close" : ",  [a]-attendeelist";
+    let promptString = "Menu: [v]-voterList, [d]-detailedTanglelist";
+    promptString += mamOpen ? ", [c]-close" : ",  [f]-finalvoterList";
     promptString += ", [q]-quit : ";
     // let promptString = "Menu: [t]-Tanglelist, [d]-detailedTanglelist , [v]-voterlist";
     // promptString += mamOpen ? ", [c]-close" : ",  [a]-attendeelist";
@@ -422,7 +422,7 @@ async function run() {
       // show the current list of voter on the Tangle
       await voterList(attendancyAddress);
     }
-    if (menuChoice == "a" && !mamOpen) {
+    if (menuChoice == "f" && !mamOpen) {
       // show the list of official decrypted attendeeTokens
       await officialAttendeeList();
     }

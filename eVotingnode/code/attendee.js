@@ -33,6 +33,7 @@ let expdatetime = "";
 let eventInformation = "";
 let walletState;
 let evotingAddress ="";
+let evotingChoice = 0;
 
 // Personal information to calculate the Merkle-root
 const personalFirstName = "Rock";
@@ -44,7 +45,7 @@ const personalDID = "did:example:123456789abcdefghi#key-1";
 const organisation = "International Red Cross";
 // for demo-purpose
 const personalMerkleRoot =
-  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q3";
+  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q5";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -162,7 +163,7 @@ function saveInfoToWallet() {
   console.log("Save data to wallet >>>>>>>>".green);
   try {
     fs.writeFileSync(
-      "./json/personalWallet2.json",
+      "./json/personalWallet1.json",
       JSON.stringify(payload, undefined, "\t")
     );
   } catch (e) {
@@ -205,15 +206,24 @@ async function mamInteract(eventQR,personalGender) {
     return;
   }
 
-  // checking if the citizen is voting again
-
+  // voting choices for the citizen
+  console.log("=================================".yellow);
+  console.log("Select the desired option for Groningens Ontzet".green);
+  console.log("1. Children's program".green);
+  console.log("2. Mini Exhibition".green);
+  console.log("3. Documentry about the relocation of groningen".green);
+  console.log("4. Pub quiz".green);
+  console.log("5. Concert".green);
+  console.log("6. Harness racing".green);
+  evotingChoice = prompt("Vote for the desired event by pressing the corresponding number".yellow);
+  
 
   
   await readPublicEventInfo(publicEventRoot);
   presentEventInfo(eventInformation);
 
   const answer = prompt(
-    "Would you like to register for this event and vote? [Y,n]: ".yellow
+    "Would you like to continue with the voted choice or cancel? [Y,n]: ".yellow
   );
   if (answer == "n") {
     return;

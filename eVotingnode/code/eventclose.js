@@ -378,6 +378,10 @@ async function mamClosedStatus() {
   console.log("Checking if event was closed..".yellow);
   let mamOpenStatus = true;
   let fMessage = "";
+  console.log(node);
+  console.log(publicEventRoot);
+  console.log(mode);
+  console.log(sideKey);
   const fetched = await mamFetchAll(node, publicEventRoot, mode, sideKey);
   if (fetched && fetched.length > 0) {
     for (let i = 0; i < fetched.length; i++) {
@@ -458,22 +462,22 @@ async function run() {
   console.log("=================================================".green);
   let theEnd = false;
   while (!theEnd) {
-    let promptString = "Menu: [v]-voterList, [d]-detailedTanglelist";
-    promptString += mamOpen ? ", [c]-close" : ",  [f]-finalvoterList, [x] - count vote";
+    let promptString = "Menu: [l]-live voterList";
+    promptString += mamOpen ? ", [c]-close" : ",  [f]-finalvoterList, [v] - count vote";
     promptString += ", [q]-quit : ";
     // let promptString = "Menu: [t]-Tanglelist, [d]-detailedTanglelist , [v]-voterlist";
     // promptString += mamOpen ? ", [c]-close" : ",  [a]-attendeelist";
     // promptString += ", [q]-quit : ";
     let menuChoice = prompt(promptString.yellow);
-    if (menuChoice == "t") {
-      // show current list of transactions on the Tangle
-      await showAlist(attendancyAddress);
-    }
-    if (menuChoice == "d") {
-      // show the details of the current transactions on the Tangle
-      await detailedList(attendancyAddress);
-    }
-    if (menuChoice == "v") {
+    // if (menuChoice == "t") {
+    //   // show current list of transactions on the Tangle
+    //   await showAlist(attendancyAddress);
+    // }
+    // if (menuChoice == "d") {
+    //   // show the details of the current transactions on the Tangle
+    //   await detailedList(attendancyAddress);
+    // }
+    if (menuChoice == "l") {
       // show the current list of voter on the Tangle
       await voterList(attendancyAddress);
     }
@@ -485,7 +489,7 @@ async function run() {
       // close the event and write the official attendeelist
       await closeEvent(attendancyAddress);
     }
-    if (menuChoice == "x" && !mamOpen) {
+    if (menuChoice == "v" && !mamOpen) {
       // close the event and counting the vote
       await voteCount(attendancyAddress);
     }

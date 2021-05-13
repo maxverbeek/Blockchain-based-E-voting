@@ -14,7 +14,7 @@ async function readInfoFromWallet() {
   // Try and load the wallet personalinfo from json file
   let parsedData;
   try {
-    const personalInformation = fs.readFileSync("./json/personalWallet2.json");
+    const personalInformation = fs.readFileSync("./json/personalWallet1.json");
     if (personalInformation) {
       parsedData = JSON.parse(personalInformation.toString());
     }

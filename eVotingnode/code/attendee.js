@@ -31,8 +31,6 @@ let publicEventRoot = "";
 let attendancyAddress = "";
 let expdatetime = "";
 let eventInformation = "";
-let walletState;
-let evotingAddress ="";
 let evotingChoice = 0;
 
 // Personal information to calculate the Merkle-root
@@ -45,7 +43,7 @@ const personalDID = "did:example:123456789abcdefghi#key-1";
 const organisation = "International Red Cross";
 // for demo-purpose
 const personalMerkleRoot =
-  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q0";
+  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q4";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -206,6 +204,10 @@ async function mamInteract(eventQR,personalGender) {
     return;
   }
 
+
+  await readPublicEventInfo(publicEventRoot);
+  presentEventInfo(eventInformation);
+
   // voting choices for the citizen
   console.log("=================================".yellow);
   console.log("Select the desired option for Groningens Ontzet".green);
@@ -216,11 +218,6 @@ async function mamInteract(eventQR,personalGender) {
   console.log("5. Concert".green);
   console.log("6. Harness racing".green);
   evotingChoice = prompt("Vote for the desired event by pressing the corresponding number".yellow);
-  
-
-  
-  await readPublicEventInfo(publicEventRoot);
-  presentEventInfo(eventInformation);
 
   const answer = prompt(
     "Would you like to continue with the voted choice or cancel? [Y,n]: ".yellow

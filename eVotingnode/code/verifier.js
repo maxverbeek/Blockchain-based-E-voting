@@ -29,6 +29,7 @@ async function hashHash(hashData) {
 
 function getEventInfo(mamData) {
   // convert from MAM to JSON
+  console.log(mamData);
   let fMessage = JSON.parse(TrytesHelper.toAscii(mamData.message));
   return fMessage;
 }
@@ -68,6 +69,7 @@ async function checkQR(code) {
   let crcValue = crcValueString.slice(-5);
   if (crccode == crcValue) {
     publicEventRoot = rootcode;
+    console.log(publicEventRoot);
     attendeeToken = await hashHash(idstring);
     // console.log(`attendeeToken :${attendeeToken}`);
     qrTime = luxon.DateTime.fromMillis(parseInt(timecode));
@@ -96,6 +98,7 @@ async function readWholeMam(startingRoot) {
 
   console.log("Fetching eventinformation....".yellow);
   const fetched = await mamFetchAll(node, startingRoot, mode, sideKey);
+  //console.log("fetched"+fetched);
   return fetched;
 }
 
@@ -146,7 +149,7 @@ function loadAttendeeTokens(mamAttendeeMessage) {
 }
 
 function checkAttended(ID, idList) {
-  // check if attendeeID is on the list of registeredIDs
+  // check if voterID is on the list of registeredIDs
   if (idList.indexOf(ID) === -1) {
     console.log(`ID : ${ID} was NOT registered at this event!`.brightRed);
     return false;
@@ -181,7 +184,7 @@ function degarble(txt) {
 }
 
 async function run() {
-  console.log("SSA-verifier-app".cyan);
+  console.log("E-voting-verifier-app".cyan);
   let verificationQR = readQR();
   console.log(`VerificationQR : ${verificationQR}`.green);
   let eventQR = prompt("Verification QR-code (*=savedversion): ");
@@ -194,7 +197,10 @@ async function run() {
   } else {
     // readEventInfo
     let allMamData = await readWholeMam(publicEventRoot);
+    //console.log("check123");
+    //console.log(allMamData);
     eventInformation = getEventInfo(allMamData[0]);
+    //console.log("check2");
     if (eventInformation.eventPublicKey.length > 0) {
       // show eventinfo
       presentEventInfo(eventInformation);

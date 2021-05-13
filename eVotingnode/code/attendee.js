@@ -31,18 +31,19 @@ let publicEventRoot = "";
 let attendancyAddress = "";
 let expdatetime = "";
 let eventInformation = "";
+let evotingChoice = 0;
 
 // Personal information to calculate the Merkle-root
-const personalFirstName = "Jaden";
+const personalFirstName = "Rock";
 const personalSurname = "Smith";
 const personalGender = "Male";
-const personalBirthdate = "19980820";
+const personalBirthdate = "08201999";
 const personalMail = "robertsmith@gmail.com";
 const personalDID = "did:example:123456789abcdefghi#key-1";
 const organisation = "International Red Cross";
 // for demo-purpose
 const personalMerkleRoot =
-  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q7";
+  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q4";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -160,7 +161,7 @@ function saveInfoToWallet() {
   console.log("Save data to wallet >>>>>>>>".green);
   try {
     fs.writeFileSync(
-      "./json/personalWallet.json",
+      "./json/personalWallet1.json",
       JSON.stringify(payload, undefined, "\t")
     );
   } catch (e) {
@@ -193,24 +194,39 @@ async function mamInteract(eventQR,personalGender) {
   }
   
   // claim varefication can be done here before storing it into wallet
-  if(personalGender=="Male"){
+  const age_requirement = 18;
+  const year_requirement = new Date().getFullYear();
+
+  if(year_requirement-age_requirement > parseInt(personalBirthdate.substr(personalBirthdate.length - 4), 10)){
     console.log("Claim verification success".green);
   }else{
     console.log("Claim verification failed".red);
     return;
   }
 
+
   await readPublicEventInfo(publicEventRoot);
   presentEventInfo(eventInformation);
 
+  // voting choices for the citizen
+  console.log("=================================".yellow);
+  console.log("Select the desired option for Groningens Ontzet".green);
+  console.log("1. Children's program".green);
+  console.log("2. Mini Exhibition".green);
+  console.log("3. Documentry about the relocation of groningen".green);
+  console.log("4. Pub quiz".green);
+  console.log("5. Concert".green);
+  console.log("6. Harness racing".green);
+  evotingChoice = prompt("Vote for the desired event by pressing the corresponding number".yellow);
+
   const answer = prompt(
-    "Would you like to register for this event and vote? [Y,n]: ".yellow
+    "Would you like to continue with the voted choice or cancel? [Y,n]: ".yellow
   );
   if (answer == "n") {
     return;
   }
 
-  const payloadRemark = prompt(`Optional remark : `.cyan);
+  //const payloadRemark = prompt(`Optional remark : `.cyan);
 
   //TODO hashPersonalInfo
   // setup&calculate merkle-root
@@ -226,8 +242,9 @@ async function mamInteract(eventQR,personalGender) {
   // console.log("===========");
 
   const payload0 = {
-    attendeeID: merkleHash2,
-    remark: payloadRemark, //HINT optional, can remain empty. Will be striped by closeevent.
+    voterID: merkleHash2,
+    votingchoice:evotingChoice,
+    //remark: payloadRemark, //HINT optional, can remain empty. Will be striped by closeevent.
     timestamp: new Date().toLocaleString(),
   };
 
@@ -249,8 +266,7 @@ async function mamInteract(eventQR,personalGender) {
     a: bufferToHex(encrypted2.iv),
     b: bufferToHex(encrypted2.ephemPublicKey),
     c: bufferToHex(encrypted2.ciphertext),
-    d: bufferToHex(encrypted2.mac),
-    e: "ho",
+    d: bufferToHex(encrypted2.mac)
   };
   //DEBUGINFO
   // console.log("enc2");

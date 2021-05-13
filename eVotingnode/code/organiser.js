@@ -163,7 +163,7 @@ async function setupMam(payload) {
   const { messageId } = await mamAttach(node, mamMessage, "SSA9EXPERIMENT");
   console.log(`Message Id`, messageId);
   console.log(
-    `You can view the mam channel here : \nhttps://explorer.iota.org/chrysalis/streams/0/${mamMessage.root}/${mode}/${sideKey}`
+    `You can view the mam channel here : \nhttps://explorer.iota.org/testnet/streams/0/${mamMessage.root}/${mode}/${sideKey}`
   );
   console.log("===============================".yellow);
 }
@@ -201,7 +201,7 @@ async function addEvent2Mam(payload) {
   const { messageId } = await mamAttach(node, mamMessage, "SSA9EXPERIMENT");
   console.log(`Message Id`, messageId);
   console.log(
-    `You can view the mam channel here : \nhttps://explorer.iota.org/chrysalis/streams/0/${mamMessage.root}/${mode}/${sideKey}`
+    `You can view the mam channel here : \nhttps://explorer.iota.org/testnet/streams/0/${mamMessage.root}/${mode}/${sideKey}`
   );
   console.log("===============================".yellow);
 }
@@ -264,7 +264,7 @@ async function makeQRmam(
   const { messageId } = await mamAttach(node, mamMessage, "SSA9EXPERIMENTQR");
   console.log(`Message Id`, messageId);
   console.log(
-    `You can view the mam channel here : \nhttps://explorer.iota.org/chrysalis/streams/0/${mamMessage.root}/${mode}/${sideKey}`
+    `You can view the mam channel here : \nhttps://explorer.iota.org/testnet/streams/0/${mamMessage.root}/${mode}/${sideKey}`
   );
   console.log("===============================".yellow);
 }

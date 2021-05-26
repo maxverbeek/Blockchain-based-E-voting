@@ -1,7 +1,3 @@
-//////////////////////////////////////////////////////////
-// Attendee generate QR-app
-// (c) A.J. Wischmann 2021
-//////////////////////////////////////////////////////////
 "use strict";
 
 const { bufferToHex, sha256, utf8ToBuffer } = require("eccrypto-js");
@@ -78,8 +74,11 @@ async function run() {
   console.log(`Generating....`);
   const personalInformation = await readInfoFromWallet();
   console.log(`mr : ${personalInformation.mr}`);
+  console.log(`er : ${personalInformation.er}`);
   let eventPersonalMerkleRoot = personalInformation.mr + personalInformation.er;
+  console.log(`epmrr : ${eventPersonalMerkleRoot}`);
   const merkleHash = await hashHash(eventPersonalMerkleRoot);
+  console.log(`epmrr hashed : ${merkleHash}`);
   const nowEpoch = luxon.DateTime.now().toMillis();
   let stringWord = nowEpoch;
   let verifierQR =

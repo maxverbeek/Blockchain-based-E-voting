@@ -1,7 +1,3 @@
-//////////////////////////////////////////////////////////
-// Organiser eventclose-app
-// (c) A.J. Wischmann 2021
-//////////////////////////////////////////////////////////
 "use strict";
 
 const { bufferToHex, hexToBuffer, decrypt } = require("eccrypto-js");
@@ -204,6 +200,7 @@ async function voteCount(attendeeIndex){
   let aListRoot = nextMAMRoot;
   const idList = [];
   const voterList = await attendeeList(attendeeIndex);
+  const finalvoterList = await getofficialAttendeeList();
   while (readMAM) {
     // readMAMrecord
     // console.log("ReadMAM ===========".red);
@@ -221,17 +218,23 @@ async function voteCount(attendeeIndex){
         );
         readMAM = false;
         // get the details from MAM and start counting
-
+        //console.log(voterList.messageIds[1]);
         for (let i = 0; i < voterList.count; i++) {
+        //for (let i = 0; i < finalvoterList.length; i++) {
           let attendeeToken = await getAttendee(voterList.messageIds[i]);
+          //let attendeeToken = await getAttendee(finalvoterList[i]);
           let aTokenJson = JSON.parse(attendeeToken);
           //console.log(aTokenJson);
+          //console.log("******************");
+          //console.log(finalvoterList);
           if (idList.indexOf(aTokenJson.voterID) === -1) {
             // added the votes count to the list
             idList.push(parseInt(aTokenJson.votingchoice));
+          }else{
+            idList.push(parseInt(0));
           }
         }
-        console.log("Voter counts.............");
+        console.log("Voting results.............");
         // console.log(idList);
         console.log("Number of votes for option 1 is "+ idList.filter(x =>x === 1).length);
         console.log("Number of votes for option 2 is "+idList.filter(x =>x === 2).length);
@@ -262,7 +265,7 @@ async function voterList(attendeeIndex) {
     if (idList.indexOf(aTokenJson.voterID) === -1) {
       idList.push(aTokenJson.voterID);
       console.log(
-        `${i + 1} : \t ${aTokenJson.voterID} - ${aTokenJson.timestamp}`);
+        `${i + 1} : \t ${aTokenJson.voterID}`);
     }
   }
   console.log(`Total unique voting IDs : ${idList.length} =========`.green);
@@ -438,7 +441,49 @@ async function officialAttendeeList() {
   for (const x in aList) {
     console.log(`Voter Token ${1 + parseInt(x)} : ${aList[x]}`);
   }
-  console.log(`Total voter : ${aList.length}`.green);
+  console.log(`Total final voter : ${aList.length}`.green);
+}
+
+async function getofficialAttendeeList() {
+  //show list with attendeeTokens
+  const mode = "restricted";
+  const sideKey = commonSideKey;
+  console.log(`Getattendees ===========`.red);
+  let aList = [];
+  //DEBUGINFO
+  // console.log("Fetching voterIDs from tangle with this information :");
+  // console.log(`Node : ${node}`.yellow);
+  // console.log(`EventRoot : ${nextMAMRoot}`.yellow);
+  // console.log(`mode : ${mode}`.yellow);
+  // console.log(`sideKey : ${sideKey}`.yellow);
+
+  // Try fetching from MAM
+  let readMAM = true;
+  let aListRoot = nextMAMRoot;
+  while (readMAM) {
+    // readMAMrecord
+    // console.log("ReadMAM ===========".red);
+    const fetched = await mamFetch(node, aListRoot, mode, sideKey);
+    // console.log(`fetched : ${fetched.message}`.green);
+    if (fetched) {
+      let fMessage = JSON.parse(TrytesHelper.toAscii(fetched.message));
+      aListRoot = fetched.nextRoot;
+      //DEBUGINFO
+      //   console.log("MAMdata ===================".red);
+      //   console.log(`fetched : ${fMessage.count}`.green);
+      if (fMessage.message == "Event closed") {
+        console.log(
+          `Event closed at : ${fMessage.date} =====`.cyan
+        );
+        readMAM = false;
+      } else {
+        aList = aList.concat(fMessage.ids);
+         //console.log("attendeeList ========");
+         //console.log(`aList : ${aList}`.yellow);
+      }
+    }
+  }
+  return aList;
 }
 
 async function run() {
@@ -473,10 +518,10 @@ async function run() {
     //   // show current list of transactions on the Tangle
     //   await showAlist(attendancyAddress);
     // }
-    // if (menuChoice == "d") {
-    //   // show the details of the current transactions on the Tangle
-    //   await detailedList(attendancyAddress);
-    // }
+    if (menuChoice == "d") {
+      // show the details of the current transactions on the Tangle
+      await detailedList(attendancyAddress);
+    }
     if (menuChoice == "l") {
       // show the current list of voter on the Tangle
       await voterList(attendancyAddress);

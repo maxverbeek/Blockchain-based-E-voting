@@ -1,7 +1,3 @@
-//////////////////////////////////////////////////////////
-// Verifier verification-app
-// (c) A.J. Wischmann 2021
-//////////////////////////////////////////////////////////
 "use strict";
 
 const { mamFetchAll, TrytesHelper } = require("@iota/mam-chrysalis.js");
@@ -52,15 +48,17 @@ async function checkQR(code) {
     personalInfo = code.slice(0, codeLength - 164);
     code = code.slice(-164);
   }
+  console.log("before"+code);
   code = degarble(code);
+  console.log("after"+code);
   let crccode = code.slice(-5).toLowerCase();
   let idstring = code.slice(0, 64).toLowerCase();
   let rootcode = code.slice(64, -18);
   let timecode = code.slice(-18, -5);
   let rest = idstring + rootcode + timecode + personalInfo + "SSAsaltQ3v%";
   //DEBUGINFO
-  //   console.log(`crccode :${crccode}`);
-  //   console.log(`idstring :${idstring}`);
+     console.log(`crccode :${crccode}`);
+     console.log(`idstring :${idstring}`);
   //   console.log(`rootcode :${rootcode}`);
   //   console.log(`timecode :${timecode}`);
   //   console.log(`rest :${rest}`);

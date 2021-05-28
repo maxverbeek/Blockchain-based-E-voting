@@ -47,12 +47,6 @@ async function readPrivateOrganiserInfo() {
   const sideKey = privateSideKey;
 
   let root = channelRoot(createChannel(walletState.seed, 2, mode, sideKey));
-  //DEBUGINFO
-  // console.log("Fetching from tangle with this information :");
-  // console.log(`Node : ${node}`.yellow);
-  // console.log(`EventRoot : ${root}`.yellow);
-  // console.log(`mode : ${mode}`.yellow);
-  // console.log(`sideKey : ${sideKey}`.yellow);
 
   // Try fetching from MAM
   console.log(
@@ -68,23 +62,11 @@ async function readPrivateOrganiserInfo() {
   } else {
     console.log("Nothing was fetched from the MAM channel");
   }
-  //DEBUGINFO
-  // console.log("MAMdata ===================".red);
-  // console.log(`fetched : ${fetched.message}`.green);
 }
 
 async function readPublicEventInfo() {
   const mode = "restricted";
   const sideKey = commonSideKey;
-
-  //DEBUGINFO
-  // console.log(
-  //   "Fetching publicEventInformation from tangle with this information :"
-  // );
-  // console.log(`Node : ${node}`.yellow);
-  // console.log(`EventRoot : ${publicEventRoot}`.yellow);
-  // console.log(`mode : ${mode}`.yellow);
-  // console.log(`sideKey : ${sideKey}`.yellow);
 
   // Try fetching from MAM
   console.log("Fetching publicEventInfo from tangle, please wait...");
@@ -96,9 +78,7 @@ async function readPublicEventInfo() {
   } else {
     console.log("Nothing was fetched from the MAM channel");
   }
-  //DEBUGINFO
-  // console.log("MAMdata ===================".red);
-  // console.log(`fetched : ${fetched.message}`.green);
+
 }
 
 function presentEventInfo(eventRecord) {
@@ -148,9 +128,6 @@ async function getAttendee(attendeeMessageID) {
   const transactionData = JSON.parse(
     Converter.bytesToUtf8(transactionDataRAW.data)
   );
-  //DEBUGINFO
-  // console.log(`Raw : ${transactionData}`);
-  // console.dir(transactionData);
 
   if (transactionData) {
     const encryptedData = {
@@ -195,12 +172,13 @@ async function voteCount(attendeeIndex){
   //checking if MAM is closed
   const mode = "restricted";
   const sideKey = commonSideKey;
-  let aList = [];
+  let vList = [];
   let readMAM = true;
   let aListRoot = nextMAMRoot;
-  const idList = [];
   const voterList = await attendeeList(attendeeIndex);
-  const finalvoterList = await getofficialAttendeeList();
+  const finalvoterList = await getofficialVotingChoiseList(attendeeIndex);
+  const idList = await getVoterListMAM();
+  //console.log(idList);
   while (readMAM) {
     // readMAMrecord
     // console.log("ReadMAM ===========".red);
@@ -209,44 +187,25 @@ async function voteCount(attendeeIndex){
     if (fetched) {
       let fMessage = JSON.parse(TrytesHelper.toAscii(fetched.message));
       aListRoot = fetched.nextRoot;
-      //DEBUGINFO
-      //   console.log("MAMdata ===================".red);
-      //   console.log(`fetched : ${fMessage.count}`.green);
       if (fMessage.message == "Event closed") {
         console.log(
           `Voting Event closed at : ${fMessage.date} =====`.cyan
         );
         readMAM = false;
-        // get the details from MAM and start counting
-        //console.log(voterList.messageIds[1]);
-        for (let i = 0; i < voterList.count; i++) {
-        //for (let i = 0; i < finalvoterList.length; i++) {
-          let attendeeToken = await getAttendee(voterList.messageIds[i]);
-          //let attendeeToken = await getAttendee(finalvoterList[i]);
-          let aTokenJson = JSON.parse(attendeeToken);
-          //console.log(aTokenJson);
-          //console.log("******************");
-          //console.log(finalvoterList);
-          if (idList.indexOf(aTokenJson.voterID) === -1) {
-            // added the votes count to the list
-            idList.push(parseInt(aTokenJson.votingchoice));
-          }else{
-            idList.push(parseInt(0));
+        //console.log(finalvoterList);
+        for(let i =0;i<finalvoterList.length;i++){
+          if(idList.indexOf(finalvoterList[i].voter_id)!=-1){
+            vList.push(finalvoterList[i].choice);
           }
         }
-        console.log("Voting results.............");
-        // console.log(idList);
-        console.log("Number of votes for option 1 is "+ idList.filter(x =>x === 1).length);
-        console.log("Number of votes for option 2 is "+idList.filter(x =>x === 2).length);
-        console.log("Number of votes for option 3 is "+idList.filter(x =>x === 3).length);
-        console.log("Number of votes for option 4 is "+idList.filter(x =>x === 4).length);
-        console.log("Number of votes for option 5 is "+idList.filter(x =>x === 5).length);
-        console.log("Number of votes for option 6 is "+idList.filter(x =>x === 6).length);
-      } else {
-        aList = aList.concat(fMessage.ids);
-        //return;
-         //console.log("attendeeList ========");
-         //console.log(`aList : ${aList}`.yellow);
+        console.log("Voting results >>>>>>>>>");
+        console.log("Number of votes for option 1 is "+ vList.filter(x =>x === '1').length);
+        console.log("Number of votes for option 2 is "+vList.filter(x =>x === '2').length);
+        console.log("Number of votes for option 3 is "+vList.filter(x =>x === '3').length);
+        console.log("Number of votes for option 4 is "+vList.filter(x =>x === '4').length);
+        console.log("Number of votes for option 5 is "+vList.filter(x =>x === '5').length);
+        console.log("Number of votes for option 6 is "+vList.filter(x =>x === '6').length);
+        return;
       }
     }
   }
@@ -262,13 +221,11 @@ async function voterList(attendeeIndex) {
     let attendeeToken = await getAttendee(aList.messageIds[i]);
     let aTokenJson = JSON.parse(attendeeToken);
     //console.log(aTokenJson);
-    if (idList.indexOf(aTokenJson.voterID) === -1) {
       idList.push(aTokenJson.voterID);
       console.log(
         `${i + 1} : \t ${aTokenJson.voterID}`);
-    }
   }
-  console.log(`Total unique voting IDs : ${idList.length} =========`.green);
+  console.log(`Total  voting IDs : ${idList.length} =========`.green);
 }
 
 async function writeCloseMessage(mamChannelState) {
@@ -350,13 +307,6 @@ async function closeEvent(attendeeIndex) {
     channelState,
     TrytesHelper.fromAscii(JSON.stringify(payloadDataRec))
   );
-  //DEBUGINFO
-  // Display the details for the MAM message.
-  // console.log("=================".red);
-  // console.log("Seed:", channelState.seed);
-  // console.log("Address:", mamMessage.address);
-  // console.log("Root:", mamMessage.root);
-  // console.log("NextRoot:", channelState.nextRoot);
 
   // Attach the message.
   console.log("Attaching =================".red);
@@ -403,14 +353,8 @@ async function officialAttendeeList() {
   //show list with attendeeTokens
   const mode = "restricted";
   const sideKey = commonSideKey;
-  console.log(`Getattendees ===========`.red);
+  console.log(`Get attendees ===========`.red);
   let aList = [];
-  //DEBUGINFO
-  // console.log("Fetching voterIDs from tangle with this information :");
-  // console.log(`Node : ${node}`.yellow);
-  // console.log(`EventRoot : ${nextMAMRoot}`.yellow);
-  // console.log(`mode : ${mode}`.yellow);
-  // console.log(`sideKey : ${sideKey}`.yellow);
 
   // Try fetching from MAM
   let readMAM = true;
@@ -425,7 +369,7 @@ async function officialAttendeeList() {
       aListRoot = fetched.nextRoot;
       //DEBUGINFO
       //   console.log("MAMdata ===================".red);
-      //   console.log(`fetched : ${fMessage.count}`.green);
+      //console.log(`fetched : ${fMessage.count}`.green);
       if (fMessage.message == "Event closed") {
         console.log(
           `Event closed at : ${fMessage.date} =====`.cyan
@@ -438,24 +382,19 @@ async function officialAttendeeList() {
       }
     }
   }
+  //console.log(aList);
   for (const x in aList) {
     console.log(`Voter Token ${1 + parseInt(x)} : ${aList[x]}`);
   }
   console.log(`Total final voter : ${aList.length}`.green);
 }
 
-async function getofficialAttendeeList() {
+async function getVoterListMAM() {
   //show list with attendeeTokens
   const mode = "restricted";
   const sideKey = commonSideKey;
-  console.log(`Getattendees ===========`.red);
+  //console.log(`Get attendees ===========`.red);
   let aList = [];
-  //DEBUGINFO
-  // console.log("Fetching voterIDs from tangle with this information :");
-  // console.log(`Node : ${node}`.yellow);
-  // console.log(`EventRoot : ${nextMAMRoot}`.yellow);
-  // console.log(`mode : ${mode}`.yellow);
-  // console.log(`sideKey : ${sideKey}`.yellow);
 
   // Try fetching from MAM
   let readMAM = true;
@@ -470,31 +409,57 @@ async function getofficialAttendeeList() {
       aListRoot = fetched.nextRoot;
       //DEBUGINFO
       //   console.log("MAMdata ===================".red);
-      //   console.log(`fetched : ${fMessage.count}`.green);
+      //console.log(`fetched : ${fMessage.count}`.green);
       if (fMessage.message == "Event closed") {
-        console.log(
-          `Event closed at : ${fMessage.date} =====`.cyan
-        );
+        // console.log(
+        //   `Event closed at : ${fMessage.date} =====`.cyan
+        // );
         readMAM = false;
       } else {
         aList = aList.concat(fMessage.ids);
-         //console.log("attendeeList ========");
-         //console.log(`aList : ${aList}`.yellow);
       }
     }
   }
+  //console.log(aList);
+  // for (const x in aList) {
+  //   console.log(`Voter Token ${1 + parseInt(x)} : ${aList[x]}`);
+  // }
+  //console.log(`Total final voter : ${aList.length}`.green);
   return aList;
+}
+
+async function getofficialVotingChoiseList(attendeeIndex) {
+  // show list of attendees with details
+  const idList = [];
+  const finalList =[];
+  const countList =[];
+  const aList = await attendeeList(attendeeIndex);
+  // readAttendeeRecord, decrypt, extract voterID, timestamp
+  for (let i = 0; i < aList.count; i++) {
+    let attendeeToken = await getAttendee(aList.messageIds[i]);
+    let aTokenJson = JSON.parse(attendeeToken);
+      finalList.push({"voter_id":aTokenJson.voterID,
+      "choice":aTokenJson.votingchoice,"timestamp":aTokenJson.timestamp});
+  }  
+  // sort the voter list
+  finalList.sort(function (a,b){
+    if(a.timestamp < b.timestamp){
+      return -1;
+    }
+  })
+  // find uniques
+  for (let i = 0; i < finalList.length; i++) {
+    if (idList.indexOf(finalList[i].voter_id) === -1) {
+      idList.push(finalList[i].voter_id);
+      countList.push(finalList[i]);  
+    }
+  }
+  return countList;
 }
 
 async function run() {
   console.log("Event-close-app".cyan);
   readWallet();
-  //DEBUGINFO
-  // console.log("Wallet".red);
-  // console.log(`EventSEED  : ${walletState.seed}`);
-  // console.log(`Password   : ${walletState.password}`);
-  // console.log(`Indexation : ${walletState.indexation}`);
-  // console.log(`AttendeeQR : ${walletState.aQR}`);
 
   // extractPrivateEventKey
   await readPrivateOrganiserInfo();

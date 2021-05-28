@@ -39,7 +39,7 @@ const personalDID = "did:example:123456789abcdefghi#key-1";
 const organisation = "International Red Cross";
 // for demo-purpose
 const personalMerkleRoot =
-  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q0";
+  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q9";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -57,12 +57,6 @@ async function readQRmam(qrSeed) {
   let indexationKey = "";
 
   let qrRoot = channelRoot(createChannel(qrSeed, 2, mode, sideKey));
-  //DEBUGINFO
-  // console.log("Fetching from tangle, please wait...");
-  // console.log(`Node : ${node}`.yellow);
-  // console.log(`qrRoot : ${qrRoot}`.yellow);
-  // console.log(`mode : ${mode}`.yellow);
-  // console.log(`sideKey : ${sideKey}`.yellow);
 
   // Try fetching from MAM
   console.log("Fetching from tangle, please wait...");
@@ -81,23 +75,11 @@ async function readQRmam(qrSeed) {
   }
   publicEventRoot = rootValue;
   attendancyAddress = indexationKey;
-  //DEBUGINFO
-  // console.log("MAMdata ===================".red);
-  // console.log(`fetched : ${fetched.message}`.green);
-  // console.log("============================".yellow);
-  // console.log(publicEventRoot);
-  // console.log(attendancyAddress);
 }
 
 async function readPublicEventInfo(publicEventRoot) {
   const mode = "restricted";
   const sideKey = commonSideKey;
-  //DEBUGINFO
-  // console.log("Fetching from publicEventtangle with this information :");
-  // console.log(`Node : ${node}`.yellow);
-  // console.log(`EventRoot : ${publicEventRoot}`.yellow);
-  // console.log(`mode : ${mode}`.yellow);
-  // console.log(`sideKey : ${sideKey}`.yellow);
 
   // Try fetching from MAM
   console.log("Fetching from tangle, please wait...");
@@ -109,9 +91,6 @@ async function readPublicEventInfo(publicEventRoot) {
   } else {
     console.log("Nothing was fetched from the MAM channel");
   }
-  //DEBUGINFO
-  // console.log("MAMdata ===================".red);
-  // console.log(`fetched : ${fetched.message}`.green);
 }
 
 function presentEventInfo(eventRecord) {
@@ -135,11 +114,8 @@ function presentEventInfo(eventRecord) {
 
 function saveInfoToWallet() {
   // write information about the event to Wallet
-  // include the peronal information also because
-  // this could change over time.
 
   // mr should be constructed from personalInfo
-  // included just for demo-purposes
   const payload = {
     firstname: personalFirstName,
     lastname: personalSurname,
@@ -148,7 +124,7 @@ function saveInfoToWallet() {
     mail: personalMail,
     organisation: organisation,
     did: personalDID,
-    mr: personalMerkleRoot,
+    personal_Merkle_Root: personalMerkleRoot,
     er: publicEventRoot,
   };
 
@@ -180,9 +156,7 @@ async function mamInteract(eventQR,personalGender) {
   }
   let nowDate = luxon.DateTime.now();
   let expFromISO = luxon.DateTime.fromISO(expdatetime);
-  // console.log(nowDate.toISO());
-  // console.log(expFromISO.toISO());
-  // if (nowDate.toMillis() > expFromISO.toMillis()) {
+
   if (nowDate > expFromISO) {
     // check for expiry of registration - set by organiser: 20? min
     console.log("The event has expired.".brightRed);
@@ -238,10 +212,11 @@ async function mamInteract(eventQR,personalGender) {
   console.log("===========");
 
   const payload0 = {
+    // payload to be stored in MAM
     voterID: merkleHash2,
     votingchoice:evotingChoice,
-    //remark: payloadRemark, //HINT optional, can remain empty. Will be striped by closeevent.
-    timestamp: new Date().toLocaleString(),
+    //timestamp: new Date().toLocaleString(),
+    timestamp: new Date().toUTCString(),
   };
 
   //DEBUGINFO
@@ -278,9 +253,6 @@ async function mamInteract(eventQR,personalGender) {
     Converter.utf8ToBytes(encrypted)
   );
   console.log("Done writing attendancy to Tangle ... ========".yellow);
-  //DEBUGINFO
-  // console.log(`Payload : `);
-  // console.dir(encrypted);
   console.log("Received Message Id", sendResult.messageId);
 
   saveInfoToWallet();

@@ -137,25 +137,13 @@ async function setupMam(payload) {
     TrytesHelper.fromAscii(JSON.stringify(payload))
   );
 
-  //DEBUGINFO
-  // console.log("mamMessage =================".red);
-  // console.log(mamMessage);
-  // console.log("channelState =================".red);
-  // console.log(channelState);
-
-  console.log("Payload =================".red);
+  console.log("Event Organizer Payload >>>>>".red);
   console.log(JSON.stringify(payload));
-  console.log("=================".red);
-
-  // Display the details for the MAM message.
-  // console.log("Seed:", channelState.seed);
-  // console.log("Address:", mamMessage.address);
-  // console.log("Root:", mamMessage.root);
-  // console.log("NextRoot:", channelState.nextRoot);
+  console.log(">>>>>>>>>>>>".red);
 
   // Attach the message.
-  console.log("Attaching =================".red);
-  console.log("Attaching private-Eventmessage to tangle, please wait...");
+  console.log("Attaching >>>>>>>>>>>".red);
+  console.log("Attaching private-Event message to tangle, please wait...");
   const { messageId } = await mamAttach(node, mamMessage, "SSA9EXPERIMENT");
   console.log(`Message Id`, messageId);
   console.log(
@@ -178,19 +166,6 @@ async function addEvent2Mam(payload) {
     TrytesHelper.fromAscii(JSON.stringify(payload))
   );
 
-  //DEBUGINFO
-  // console.log("channelState =================".red);
-  // console.log(channelState);
-  // console.log("mamMessage =================".red);
-  // console.log(mamMessage);
-
-  // Display the details for the MAM message.
-  // console.log("=================".red);
-  // console.log("Seed:", channelState.seed);
-  // console.log("Address:", mamMessage.address);
-  // console.log("Root:", mamMessage.root);
-  // console.log("NextRoot:", channelState.nextRoot);
-
   // Attach the message.
   console.log("Attaching =================".red);
   console.log("Attaching Eventmessage to tangle, please wait...");
@@ -207,10 +182,6 @@ async function makeQRmam(
   attendanceNotificationKey,
   expiryDateTime
 ) {
-  // This is a MAM with only 1 restricted-record:
-  // publicRootEventMAM -as link to Eventinformation
-  // indexation - as tag for attendance-transactions/notifications
-  // timestamp - expiryDateTime
 
   const mode = "restricted";
   const sideKey = "DATE"; //TODO change for dynamic password?
@@ -240,18 +211,9 @@ async function makeQRmam(
     TrytesHelper.fromAscii(JSON.stringify(payloadQR))
   );
 
-  saveQR(attendeeQRcode); // SEED    : plus sidekey?!
+  // SEED    : plus sidekey?!
+  saveQR(attendeeQRcode); 
 
-  //DEBUGINFO
-  // console.log("channelQRState =================".red);
-  // console.log(channelQRState);
-
-  // Display the details for the MAM message.
-  // console.log("=================".red);
-  // console.log("Seed:", channelQRState.seed);
-  // console.log("Address:", mamMessage.address);
-  // console.log("Root:", mamMessage.root);
-  // console.log("NextRoot:", channelQRState.nextRoot);
 
   // Attach the message.
   console.log("Attaching =================".red);
@@ -283,7 +245,7 @@ function makeMamEntryPointAttendee() {
   saveSEEDnPassword();
 }
 
-console.log("E-voting-app".cyan);
+console.log("E-voting Application".cyan);
 // Unique SEED per event
 eventSEED = prompt(
   "Event SEED -81 UPPERCASE A-Z,9- (*=random-auto-generate): "

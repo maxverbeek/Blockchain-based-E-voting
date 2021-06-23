@@ -57,10 +57,6 @@ function engarble(txt) {
   return z;
 }
 
-// readWalletInformation
-// generateQR
-// writeQR
-
 async function run() {
   // generate a new verifierQRcode for a past event from personalWallet
 
@@ -72,10 +68,11 @@ async function run() {
   if (menuChoice.toUpperCase() === "Y") includePersonalData = true;
 
   console.log(`Generating....`);
+  // readWalletInformation
   const personalInformation = await readInfoFromWallet();
-  console.log(`mr : ${personalInformation.mr}`);
+  console.log(`personal Merkle Root : ${personalInformation.personal_Merkle_Root}`);
   console.log(`er : ${personalInformation.er}`);
-  let eventPersonalMerkleRoot = personalInformation.mr + personalInformation.er;
+  let eventPersonalMerkleRoot = personalInformation.personal_Merkle_Root + personalInformation.er;
   console.log(`epmrr : ${eventPersonalMerkleRoot}`);
   const merkleHash = await hashHash(eventPersonalMerkleRoot);
   console.log(`epmrr hashed : ${merkleHash}`);
@@ -84,6 +81,7 @@ async function run() {
   let verifierQR =
     bufferToHex(merkleHash) + personalInformation.er + stringWord;
   let personalString = "";
+  // generateQR
   if (includePersonalData)
     personalString = `${personalInformation.firstname} ${personalInformation.lastname}, ${personalInformation.birthdate}//`;
   const crcCheck = await hashHash(verifierQR + personalString + "SSAsaltQ3v%");
@@ -92,6 +90,7 @@ async function run() {
   verifierQR = engarble(verifierQR);
   if (includePersonalData) verifierQR = personalString + verifierQR;
   console.log(`VerifierQR : ${verifierQR}`.green);
+  // writeQR
   saveVerifierQR(verifierQR);
   console.log(`You can use this QR-code to show to your verifier :`);
   console.log(

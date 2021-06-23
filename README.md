@@ -24,3 +24,12 @@ counted (individually veriable).
 7. Process is difficult to understand.
 
 Note - eVotingnode is forked and tweaked to the user requirement from https://gitlab.com/blockchainlabdrenthe/nodeSSA.
+
+# How to build and setup the Application
+
+1. Extrace the file or clone this repository.
+2. Perform npm install so that all npm packages gets installed. Do this inside the folder ./eVotingnode
+3. Got to the folder called milestone2. (eVotingnode/code/milestone2/)
+4. Perform npm install again
+5. Since I am using IOTA Identity WASM bindings
+6. ```npm run build:nodejs``` 

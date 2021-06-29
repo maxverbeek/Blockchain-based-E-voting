@@ -18,6 +18,7 @@ const luxon = require("luxon");
 const fs = require("fs");
 const prompt = require("prompt-sync")({ sigint: true });
 const colors = require("colors");
+const {checkCredential } = require('./milestone2/auth-verif/node/identity_wasm');
 
 const node = "https://api.hornet-0.testnet.chrysalis2.com";
 const commonSideKey =
@@ -30,16 +31,16 @@ let eventInformation = "";
 let evotingChoice = 0;
 
 // Personal information to calculate the Merkle-root
-const personalFirstName = "Rock";
-const personalSurname = "Smith";
-const personalGender = "Male";
-const personalBirthdate = "08201999";
-const personalMail = "robertsmith@gmail.com";
-const personalDID = "did:example:123456789abcdefghi#key-1";
-const organisation = "International Red Cross";
+// const personalFirstName = "Rock";
+// const personalSurname = "Smith";
+// const personalGender = "Male";
+// const personalBirthdate = "08201999";
+// const personalMail = "robertsmith@gmail.com";
+// const personalDID = "did:example:123456789abcdefghi#key-1";
+// const organisation = "International Red Cross";
 // for demo-purpose
 const personalMerkleRoot =
-  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q9";
+  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q0";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -50,7 +51,38 @@ function readQR() {
   } catch (err) {}
 }
 
+function readQR_verifiable_credentials() {
+  // Try and load the QR-verifiable credentials from file
+  // done to replicate scanning of QR code
+  try {
+    const data = fs.readFileSync("./milestone2/auth-verif/authenticate/citizen_verifiable_credentials.json", "utf8");
+    return data;
+  } catch (err) {}
+}
+
+function createPersonalMerkleRoot(unique_id){
+  let id = unique_id.slice(9);
+  let uniqueMerkleRoot = id.toLowerCase();
+  //uniqueMerkleRoot.concat(id.toLowerCase());
+  uniqueMerkleRoot = uniqueMerkleRoot + id.toLowerCase();
+  uniqueMerkleRoot = uniqueMerkleRoot.slice(24);
+  return uniqueMerkleRoot;
+}
+
+function eligibilty_check(date_of_birth){
+  // only checking if the citizen is above 18 years
+  // can be changed to according to the organization's requirement
+  const age_requirement = 18;
+  const year_requirement = new Date().getFullYear();
+  if(year_requirement-age_requirement > parseInt(date_of_birth.substr(date_of_birth.length - 4), 10)){
+      return true;
+    }else{
+      return false;
+    }
+}
+
 async function readQRmam(qrSeed) {
+  console.log(qrSeed);
   const mode = "restricted";
   const sideKey = "DATE"; //TODO make it dynamic UTC-date?
   let rootValue = "NON";
@@ -117,13 +149,13 @@ function saveInfoToWallet() {
 
   // mr should be constructed from personalInfo
   const payload = {
-    firstname: personalFirstName,
-    lastname: personalSurname,
-    gender: personalGender,
-    birthdate: personalBirthdate,
-    mail: personalMail,
-    organisation: organisation,
-    did: personalDID,
+    // firstname: personalFirstName,
+    // lastname: personalSurname,
+    // gender: personalGender,
+    // birthdate: personalBirthdate,
+    // mail: personalMail,
+    // organisation: organisation,
+    //did: personalDID,
     personal_Merkle_Root: personalMerkleRoot,
     er: publicEventRoot,
   };
@@ -146,7 +178,20 @@ async function hashHash(mroot) {
   return bufferToHex(element);
 }
 
-async function mamInteract(eventQR,personalGender) {
+async function verifyEligible(citizen_credential) {
+
+  console.log("Eligibilty check..............");
+  //console.log(citizen_credential);
+  if(citizen_credential){
+      console.log("Citizen is eligible");
+  }else{
+      console.log("Citizen is not eligible");
+  }
+  
+}
+
+//async function mamInteract(eventQR,personalGender) {
+async function mamInteract(eventQR) {
   // start the whole process
 
   await readQRmam(eventQR);
@@ -164,15 +209,15 @@ async function mamInteract(eventQR,personalGender) {
   }
   
   // claim varefication can be done here before storing it into wallet
-  const age_requirement = 18;
-  const year_requirement = new Date().getFullYear();
+  // const age_requirement = 18;
+  // const year_requirement = new Date().getFullYear();
 
-  if(year_requirement-age_requirement > parseInt(personalBirthdate.substr(personalBirthdate.length - 4), 10)){
-    console.log("Claim verification success".green);
-  }else{
-    console.log("Claim verification failed".red);
-    return;
-  }
+  // if(year_requirement-age_requirement > parseInt(personalBirthdate.substr(personalBirthdate.length - 4), 10)){
+  //   console.log("Claim verification success".green);
+  // }else{
+  //   console.log("Claim verification failed".red);
+  //   return;
+  // }
 
 
   await readPublicEventInfo(publicEventRoot);
@@ -261,7 +306,16 @@ async function mamInteract(eventQR,personalGender) {
 console.log("E-voting-app".cyan);
 let readQRcode = readQR();
 console.log(`QRcode from file = ${readQRcode}`.yellow);
+let verifiabledata = JSON.parse(readQR_verifiable_credentials());
+// create personalized merkele root
+let citizen_merkel_root = createPersonalMerkleRoot(verifiabledata.credentialSubject.id);
+console.log(citizen_merkel_root);
+
+// check eligibilty age above18
+verifyEligible(verifiabledata.credentialSubject.age_above18);
+
 let eventQR = prompt("Event QR-code (*=savedversion): ");
 if (eventQR === "*") eventQR = readQRcode;
 
-mamInteract(eventQR,personalGender);
+//mamInteract(eventQR,personalGender);
+mamInteract(eventQR);

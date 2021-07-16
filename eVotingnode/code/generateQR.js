@@ -17,7 +17,8 @@ async function readInfoFromWallet() {
   } catch (e) {
     console.log(`Error : ${e}`);
   }
-  console.log(`Name : ${parsedData.firstname} ${parsedData.lastname}`.green);
+  //console.log(parsedData);
+  //console.log(`Name : ${parsedData.firstname} ${parsedData.lastname}`.green);
   return parsedData;
 }
 
@@ -63,19 +64,23 @@ async function run() {
   console.log(`VerifierQRcode-generator`.cyan);
   let includePersonalData = false;
   let menuChoice = prompt(
-    `Would you like to incorporate your Name and Birthdate? [y,N] : `.yellow
+    `Would you like to incorporate additional text for better verification [Y or n] `.yellow
   );
   if (menuChoice.toUpperCase() === "Y") includePersonalData = true;
-
+  let sampleText;
+  if(includePersonalData){
+    sampleText = prompt("What is the additional text ".yellow);
+  }
+   
   console.log(`Generating....`);
   // readWalletInformation
   const personalInformation = await readInfoFromWallet();
-  console.log(`personal Merkle Root : ${personalInformation.personal_Merkle_Root}`);
-  console.log(`er : ${personalInformation.er}`);
+  //console.log(`personal Merkle Root : ${personalInformation.personal_Merkle_Root}`);
+  //console.log(`er : ${personalInformation.er}`);
   let eventPersonalMerkleRoot = personalInformation.personal_Merkle_Root + personalInformation.er;
-  console.log(`epmrr : ${eventPersonalMerkleRoot}`);
+  //console.log(`epmrr : ${eventPersonalMerkleRoot}`);
   const merkleHash = await hashHash(eventPersonalMerkleRoot);
-  console.log(`epmrr hashed : ${merkleHash}`);
+  //console.log(`epmrr hashed : ${merkleHash}`);
   const nowEpoch = luxon.DateTime.now().toMillis();
   let stringWord = nowEpoch;
   let verifierQR =
@@ -83,7 +88,8 @@ async function run() {
   let personalString = "";
   // generateQR
   if (includePersonalData)
-    personalString = `${personalInformation.firstname} ${personalInformation.lastname}, ${personalInformation.birthdate}//`;
+    //personalString = `${personalInformation.firstname} ${personalInformation.lastname}, ${personalInformation.birthdate}//`;
+    personalString = `${sampleText}//`;
   const crcCheck = await hashHash(verifierQR + personalString + "SSAsaltQ3v%");
   verifierQR += crcCheck.slice(-5);
   verifierQR = verifierQR.toUpperCase();

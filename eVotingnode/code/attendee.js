@@ -39,8 +39,8 @@ let evotingChoice = 0;
 // const personalDID = "did:example:123456789abcdefghi#key-1";
 // const organisation = "International Red Cross";
 // for demo-purpose
-const personalMerkleRoot =
-  "ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q0";
+//const personalMerkleRoot =
+  //"ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q0";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -144,7 +144,7 @@ function presentEventInfo(eventRecord) {
   console.log("=================================".red);
 }
 
-function saveInfoToWallet() {
+function saveInfoToWallet(personalMerkleRoot) {
   // write information about the event to Wallet
 
   // mr should be constructed from personalInfo
@@ -191,7 +191,8 @@ async function verifyEligible(citizen_credential) {
 }
 
 //async function mamInteract(eventQR,personalGender) {
-async function mamInteract(eventQR) {
+async function mamInteract(eventQR,personalMerkleRoot) {
+//async function mamInteract(eventQR) {
   // start the whole process
 
   await readQRmam(eventQR);
@@ -285,11 +286,11 @@ async function mamInteract(eventQR) {
     d: bufferToHex(encrypted2.mac)
   };
   //DEBUGINFO
-   console.log("enc2");
+  //console.log("enc2");
   const encrypted = JSON.stringify(payloadEnc);
-  console.log(encrypted);
+  //console.log(encrypted);
 
-  console.log(`PublicKey : ${eventInformation.eventPublicKey}`.green);
+  //console.log(`PublicKey : ${eventInformation.eventPublicKey}`.green);
   // const encrypted = attendeeData;
 
   const sendResult = await sendData(
@@ -300,7 +301,7 @@ async function mamInteract(eventQR) {
   console.log("Done writing attendancy to Tangle ... ========".yellow);
   console.log("Received Message Id", sendResult.messageId);
 
-  saveInfoToWallet();
+  saveInfoToWallet(personalMerkleRoot);
 }
 
 console.log("E-voting-app".cyan);
@@ -309,7 +310,7 @@ console.log(`QRcode from file = ${readQRcode}`.yellow);
 let verifiabledata = JSON.parse(readQR_verifiable_credentials());
 // create personalized merkele root
 let citizen_merkel_root = createPersonalMerkleRoot(verifiabledata.credentialSubject.id);
-console.log(citizen_merkel_root);
+//console.log(citizen_merkel_root);
 
 // check eligibilty age above18
 verifyEligible(verifiabledata.credentialSubject.age_above18);
@@ -317,5 +318,5 @@ verifyEligible(verifiabledata.credentialSubject.age_above18);
 let eventQR = prompt("Event QR-code (*=savedversion): ");
 if (eventQR === "*") eventQR = readQRcode;
 
-//mamInteract(eventQR,personalGender);
-mamInteract(eventQR);
+//mamInteract(eventQR);
+mamInteract(eventQR,citizen_merkel_root);

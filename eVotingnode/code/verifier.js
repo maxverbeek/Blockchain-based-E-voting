@@ -48,20 +48,20 @@ async function checkQR(code) {
     personalInfo = code.slice(0, codeLength - 164);
     code = code.slice(-164);
   }
-  console.log("before"+code);
+  //console.log("before"+code);
   code = degarble(code);
-  console.log("after"+code);
+  //console.log("after"+code);
   let crccode = code.slice(-5).toLowerCase();
   let idstring = code.slice(0, 64).toLowerCase();
   let rootcode = code.slice(64, -18);
   let timecode = code.slice(-18, -5);
   let rest = idstring + rootcode + timecode + personalInfo + "SSAsaltQ3v%";
   //DEBUGINFO
-     console.log(`crccode :${crccode}`);
-     console.log(`idstring :${idstring}`);
-  //   console.log(`rootcode :${rootcode}`);
-  //   console.log(`timecode :${timecode}`);
-  //   console.log(`rest :${rest}`);
+     //console.log(`crccode :${crccode}`);
+     //console.log(`idstring :${idstring}`);
+     //console.log(`rootcode :${rootcode}`);
+     //console.log(`timecode :${timecode}`);
+     //console.log(`rest :${rest}`);
 
   let crcValueString = await hashHash(rest);
   let crcValue = crcValueString.slice(-5);
@@ -69,7 +69,7 @@ async function checkQR(code) {
     publicEventRoot = rootcode;
     console.log(publicEventRoot);
     attendeeToken = await hashHash(idstring);
-    // console.log(`attendeeToken :${attendeeToken}`);
+    //console.log(`attendeeToken :${attendeeToken}`);
     qrTime = luxon.DateTime.fromMillis(parseInt(timecode));
     let nowTime = luxon.DateTime.now();
     let timeDiff = nowTime.diff(qrTime);
@@ -149,10 +149,10 @@ function loadAttendeeTokens(mamAttendeeMessage) {
 function checkAttended(ID, idList) {
   // check if voterID is on the list of registeredIDs
   if (idList.indexOf(ID) === -1) {
-    console.log(`ID : ${ID} was NOT registered at this event!`.brightRed);
+    console.log(`ID : ${ID} has not voted for this E-voting event!`.brightRed);
     return false;
   } else {
-    console.log(`ID : ${ID} has attended this event.`.green);
+    console.log(`ID : ${ID} has voted for this E-voting event.`.green);
     return true;
   }
 }

@@ -16,6 +16,18 @@ function saveQR(qrcode) {
     }
   }
 
+function get_eligibilty_age(date_of_birth,age_requirement){
+    // only checking if the citizen is above 18 years
+    // can be changed to according to the organization's requirement
+    //const age_requirement = 18;
+    const year_requirement = new Date().getFullYear();
+    if(year_requirement-age_requirement > parseInt(date_of_birth.substr(date_of_birth.length - 4), 10)){
+        return true;
+      }else{
+        return false;
+      }
+}
+
 async function run() {
 
     const CLIENT_CONFIG = {
@@ -32,29 +44,37 @@ async function run() {
     console.log(government_id);
 
     // Prepare a credential subject indicating the degree earned by citizen_id
-    let credentialSubject = {
-        id: citizen_id.doc.id.toString(),
-        first_name: "Ron",
-        last_name: "Smith",
-        birthdate:"08201999",
-        postalcode: "9852",
-        nationality: "The Netherlands",
-        city: "Groningen",
-        gender: "Male",
-        bsn: "987452136"
-    };
+    // let credentialSubject = {
+    //     id: citizen_id.doc.id.toString(),
+    //     first_name: "Harry",
+    //     last_name: "Smith",
+    //     birthdate:"08201999",
+    //     postalcode: "9852",
+    //     nationality: "The Netherlands",
+    //     city: "Groningen",
+    //     gender: "Male",
+    //     bsn: "987452136"
+    // };
 
     console.log("****************final signed credentials*****************");
     console.log("Press 1 for sharing only name and birthdate");
     console.log("Press 2 for sharing all data");
     let choice = prompt("Your choise ");
     if(choice == "1"){
-        
-        credentialSubject = {
+      
+        let credentialSubject = {
             id: citizen_id.doc.id.toString(),
             first_name: "Ron",
-            birthdate:"08201999"
+            birthdate:"08201998",
         };
+
+        let is_above18 = get_eligibilty_age(credentialSubject.birthdate,18);
+        let is_above25 = get_eligibilty_age(credentialSubject.birthdate,25);
+        let is_above50 = get_eligibilty_age(credentialSubject.birthdate,50);
+
+        credentialSubject.age_above18 = is_above18;
+        credentialSubject.age_above25 = is_above25;
+        credentialSubject.age_above50 = is_above50;
 
         // Create an unsigned `Decentralized Identity` credential for citizen_id
         const unsignedVc = VerifiableCredential.extend({
@@ -76,6 +96,25 @@ async function run() {
 
     }else{
         
+        let credentialSubject = {
+            id: citizen_id.doc.id.toString(),
+            first_name: "Ron",
+            last_name: "Smith",
+            birthdate:"08201995",
+            postalcode: "9852",
+            nationality: "The Netherlands",
+            city: "Groningen",
+            gender: "Male",
+            bsn: "987452136"
+        };
+
+        let is_above18 = get_eligibilty_age(credentialSubject.birthdate,18);
+        let is_above25 = get_eligibilty_age(credentialSubject.birthdate,25);
+        let is_above50 = get_eligibilty_age(credentialSubject.birthdate,50);
+
+        credentialSubject.age_above18 = is_above18;
+        credentialSubject.age_above25 = is_above25;
+        credentialSubject.age_above50 = is_above50;
         // Create an unsigned `Decentralized Identity` credential for citizen_id
         const unsignedVc = VerifiableCredential.extend({
             id: "http://groninen.edu/credentials/3732",

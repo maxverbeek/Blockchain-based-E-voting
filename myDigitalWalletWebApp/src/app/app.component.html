@@ -1,0 +1,24 @@
+<nav class="navbar navbar-expand-lg navbar-light " style="background-color: grey;">
+  <span class="navbar-brand">
+      <img src="/assets/icon.png" width="30" height="30" class="d-inline-block align-top" alt=""> My Digital E-wallet</span>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" routerLink="/addcredentials" routerLinkActive="active" style="color: white;">New Credentails</a>
+          </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/scancredentials" routerLinkActive="active" style="color:white;">Scan Credentials</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/displaycredentials" routerLinkActive="active" style="color:white;">My Credentials</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/generatecredentials" routerLinkActive="active" style="color:white;">Generate QR</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<router-outlet></router-outlet>

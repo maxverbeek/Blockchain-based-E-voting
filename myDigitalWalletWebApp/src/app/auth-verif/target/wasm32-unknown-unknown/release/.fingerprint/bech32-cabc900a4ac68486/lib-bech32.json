@@ -1,0 +1,1 @@
+{"rustc":3058707760394983085,"features":"[\"default\", \"std\"]","target":5110289068296260541,"profile":2285152228202085614,"path":3050445321780207433,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"wasm32-unknown-unknown\\release\\.fingerprint\\bech32-cabc900a4ac68486\\dep-lib-bech32"}}],"rustflags":[],"metadata":6768095132413631544,"config":0,"compile_kind":8104632896995515128}

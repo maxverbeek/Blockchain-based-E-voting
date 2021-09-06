@@ -54,3 +54,7 @@ The above steps will build and install all dependencies that are required for th
 14. After closing the event, if we run eventclose.js again then vote counting option will be visible. Chossing it will start the process of couting and displays the results.
 15. To perform individually verifiability property of this application. We have to run generateQR.js - ```node generateQR.js``` .
 16. After that it will genrate a QRcode which can be used by the script verifier.js to verify if that person has voted by running verifier.js - ```node verifier.js``` . 
+
+## Note
+Please not that for this application to work ```npm install``` has to be done in directory ./eVotingnode and eVotingnode/code/milestone2/auth-verif/ 
+The test net website is in development and can change in future so make sure it is the updated one.

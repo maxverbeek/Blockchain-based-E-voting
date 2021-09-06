@@ -20,7 +20,7 @@ const keyPair = generateKeyPair();
 const privateOrgPrivateEventKey = keyPair.privateKey;
 const publicEventKey = keyPair.publicKey;
 
-// public organiserdetails -for demopurposes hardcoded
+// public organiser details hardcoded
 const organiserName = "Groningen Ltd.";
 const organiserAddress = "Vrydemalaan 2";
 const organiserPostcode = "9713 WS";
@@ -30,7 +30,7 @@ const organiserTelephone = "01 234 56 789";
 const organiserMail = "info@groningen.com";
 const organiserDID = "did:example:342159687abcdefghi#key-1";
 
-// public eventdetails -for demopurposes hardcoded
+// public event details hardcoded
 const privateOrgPrivateTitle = "Groningens organizers";
 const eventName = "Groningens Ontzet event organization";
 const eventDate = "April 28th 2021";
@@ -140,14 +140,14 @@ async function setupMam(payload) {
   console.log("Event Organizer Payload >>>>>".red);
   console.log(JSON.stringify(payload));
   console.log(">>>>>>>>>>>>".red);
-
   // Attach the message.
   console.log("Attaching >>>>>>>>>>>".red);
   console.log("Attaching private-Event message to tangle, please wait...");
   const { messageId } = await mamAttach(node, mamMessage, "SSA9EXPERIMENT");
   console.log(`Message Id`, messageId);
   console.log(
-    `You can view the mam channel here : \nhttps://explorer.iota.org/testnet/streams/0/${mamMessage.root}/${mode}/${sideKey}`
+    `You can view the mam channel here : 
+    \nhttps://explorer.iota.org/testnet/streams/0/${mamMessage.root}/${mode}/${sideKey}`
   );
   console.log("===============================".yellow);
 }
@@ -184,7 +184,7 @@ async function makeQRmam(
 ) {
 
   const mode = "restricted";
-  const sideKey = "DATE"; //TODO change for dynamic password?
+  const sideKey = "DATE"; 
   let channelQRState;
 
   const payloadQR = {
@@ -199,7 +199,7 @@ async function makeQRmam(
 
   attendeeQRcode = "SSA" + generateSeed(78);
   console.log(`Attendee QR-seed : ${attendeeQRcode}`.cyan);
-  console.log(`You can use this QR-code to show to your attendees :`);
+  console.log(`You can use this QR-code to attend the E-voting event :`);
   console.log(
     `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${attendeeQRcode}`
       .yellow

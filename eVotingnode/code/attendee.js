@@ -20,7 +20,8 @@ const prompt = require("prompt-sync")({ sigint: true });
 const colors = require("colors");
 const {checkCredential } = require('./milestone2/auth-verif/node/identity_wasm');
 
-const node = "https://api.hornet-0.testnet.chrysalis2.com";
+//const node = "https://api.hornet-0.testnet.chrysalis2.com";
+const node = "https://api.lb-0.testnet.chrysalis2.com";
 const commonSideKey =
   "SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSA";
 
@@ -30,17 +31,6 @@ let expdatetime = "";
 let eventInformation = "";
 let evotingChoice = 0;
 
-// Personal information to calculate the Merkle-root
-// const personalFirstName = "Rock";
-// const personalSurname = "Smith";
-// const personalGender = "Male";
-// const personalBirthdate = "08201999";
-// const personalMail = "robertsmith@gmail.com";
-// const personalDID = "did:example:123456789abcdefghi#key-1";
-// const organisation = "International Red Cross";
-// for demo-purpose
-//const personalMerkleRoot =
-  //"ec76f5e70d24137494dbade31136119b52458b19105fd7e5b5812f4de38z82q0";
 let eventPersonalMerkleRoot;
 
 function readQR() {
@@ -63,7 +53,6 @@ function readQR_verifiable_credentials() {
 function createPersonalMerkleRoot(unique_id){
   let id = unique_id.slice(9);
   let uniqueMerkleRoot = id.toLowerCase();
-  //uniqueMerkleRoot.concat(id.toLowerCase());
   uniqueMerkleRoot = uniqueMerkleRoot + id.toLowerCase();
   uniqueMerkleRoot = uniqueMerkleRoot.slice(24);
   return uniqueMerkleRoot;
@@ -87,20 +76,18 @@ async function readQRmam(qrSeed) {
   const sideKey = "DATE"; //TODO make it dynamic UTC-date?
   let rootValue = "NON";
   let indexationKey = "";
-
   let qrRoot = channelRoot(createChannel(qrSeed, 2, mode, sideKey));
-
   // Try fetching from MAM
   console.log("Fetching from tangle, please wait...");
-  const fetched = await mamFetch(node, qrRoot, mode, sideKey);
+  console.log(node);
+  console.log(qrRoot);
+  const fetched = await mamFetch(node, qrRoot, "restricted", "DATE");
   if (fetched) {
     let fMessage = JSON.parse(TrytesHelper.toAscii(fetched.message));
     // console.log("Fetched : ", fMessage);
     rootValue = fMessage.root;
     indexationKey = fMessage.indexation;
     expdatetime = fMessage.expirytimestamp;
-    // console.log(`Message.root : ${rootValue}`);
-    // console.log(`Message.indexation : ${indexationKey}`);
     console.log(`Expirydatetime : ${expdatetime}`);
   } else {
     console.log("Nothing was fetched from the MAM channel");
@@ -149,13 +136,6 @@ function saveInfoToWallet(personalMerkleRoot) {
 
   // mr should be constructed from personalInfo
   const payload = {
-    // firstname: personalFirstName,
-    // lastname: personalSurname,
-    // gender: personalGender,
-    // birthdate: personalBirthdate,
-    // mail: personalMail,
-    // organisation: organisation,
-    //did: personalDID,
     personal_Merkle_Root: personalMerkleRoot,
     er: publicEventRoot,
   };
@@ -178,14 +158,16 @@ async function hashHash(mroot) {
   return bufferToHex(element);
 }
 
-async function verifyEligible(citizen_credential) {
+function verifyEligible(citizen_credential) {
 
   console.log("Eligibilty check..............");
   //console.log(citizen_credential);
   if(citizen_credential){
       console.log("Citizen is eligible");
+      return true;
   }else{
       console.log("Citizen is not eligible");
+      return false;
   }
   
 }
@@ -209,18 +191,6 @@ async function mamInteract(eventQR,personalMerkleRoot) {
     return;
   }
   
-  // claim varefication can be done here before storing it into wallet
-  // const age_requirement = 18;
-  // const year_requirement = new Date().getFullYear();
-
-  // if(year_requirement-age_requirement > parseInt(personalBirthdate.substr(personalBirthdate.length - 4), 10)){
-  //   console.log("Claim verification success".green);
-  // }else{
-  //   console.log("Claim verification failed".red);
-  //   return;
-  // }
-
-
   await readPublicEventInfo(publicEventRoot);
   presentEventInfo(eventInformation);
 
@@ -242,16 +212,11 @@ async function mamInteract(eventQR,personalMerkleRoot) {
     return;
   }
 
-  //const payloadRemark = prompt(`Optional remark : `.cyan);
-
-  //TODO hashPersonalInfo
-  // setup&calculate merkle-root
-
   // include publicEventRoot to make this token unique per event
   eventPersonalMerkleRoot = personalMerkleRoot + publicEventRoot;
   const mh2 = await hashHash(eventPersonalMerkleRoot);
   const merkleHash2 = await hashHash(mh2);
-  //DEBUGINFO
+  
   console.log("eventPersonalMerkleRoot :".red);
   console.log(eventPersonalMerkleRoot);
   console.log("merkleHash2"+merkleHash2);
@@ -261,11 +226,10 @@ async function mamInteract(eventQR,personalMerkleRoot) {
     // payload to be stored in MAM
     voterID: merkleHash2,
     votingchoice:evotingChoice,
-    //timestamp: new Date().toLocaleString(),
     timestamp: new Date().toUTCString(),
   };
 
-  //DEBUGINFO
+
   console.log("Payloadcontent ==============".green);
   console.log(payload0);
 
@@ -285,13 +249,9 @@ async function mamInteract(eventQR,personalMerkleRoot) {
     c: bufferToHex(encrypted2.ciphertext),
     d: bufferToHex(encrypted2.mac)
   };
-  //DEBUGINFO
-  //console.log("enc2");
-  const encrypted = JSON.stringify(payloadEnc);
-  //console.log(encrypted);
 
-  //console.log(`PublicKey : ${eventInformation.eventPublicKey}`.green);
-  // const encrypted = attendeeData;
+  const encrypted = JSON.stringify(payloadEnc);
+
 
   const sendResult = await sendData(
     client,
@@ -310,13 +270,19 @@ console.log(`QRcode from file = ${readQRcode}`.yellow);
 let verifiabledata = JSON.parse(readQR_verifiable_credentials());
 // create personalized merkele root
 let citizen_merkel_root = createPersonalMerkleRoot(verifiabledata.credentialSubject.id);
-//console.log(citizen_merkel_root);
+
 
 // check eligibilty age above18
-verifyEligible(verifiabledata.credentialSubject.age_above18);
+let boolEligible = verifyEligible(verifiabledata.credentialSubject.age_above18);
 
-let eventQR = prompt("Event QR-code (*=savedversion): ");
-if (eventQR === "*") eventQR = readQRcode;
+if(boolEligible){
 
-//mamInteract(eventQR);
-mamInteract(eventQR,citizen_merkel_root);
+  let eventQR = prompt("Event QR-code (*=savedversion): ");
+  if (eventQR === "*") eventQR = readQRcode;
+
+  //mamInteract(eventQR);
+  mamInteract(eventQR,citizen_merkel_root);
+}
+else{
+  console.log("Citizen is not eligble to vote");
+}

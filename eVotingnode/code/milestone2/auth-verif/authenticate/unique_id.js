@@ -1,4 +1,4 @@
-const { VerifiableCredential, checkCredential } = require('../node/identity_wasm');
+const { VerifiableCredential } = require('../node/identity_wasm');
 const { createIdentity } = require('./create_did');
 const { manipulateIdentity } = require('./manipulate_did');
 const fs = require("fs");
@@ -64,8 +64,8 @@ async function run() {
       
         let credentialSubject = {
             id: citizen_id.doc.id.toString(),
-            first_name: "Ron",
-            birthdate:"08201998",
+            first_name: "Sam",
+            birthdate:"08201990",
         };
 
         let is_above18 = get_eligibilty_age(credentialSubject.birthdate,18);
@@ -92,15 +92,18 @@ async function run() {
 
         saveQR(JSON.stringify(signedVc));
         console.log("Verifiable credentials is successfull..............");
-        
+        // uncomment to get the QR code
+    //     console.log("You can use this QR-code to show to your verifiable credentials");
+    //     console.log(
+    //    `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${JSON.stringify(signedVc)}`);
 
     }else{
         
         let credentialSubject = {
             id: citizen_id.doc.id.toString(),
-            first_name: "Ron",
+            first_name: "James",
             last_name: "Smith",
-            birthdate:"08201995",
+            birthdate:"08202000",
             postalcode: "9852",
             nationality: "The Netherlands",
             city: "Groningen",
@@ -131,12 +134,14 @@ async function run() {
 
         saveQR(JSON.stringify(signedVc));
         console.log("Verifiable credentials is successfull..............");
+        // uncomment to get the QR code
+        //console.log("You can use this QR-code to show to your verifiable credentials");
+        //console.log(
+       //`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${JSON.stringify(signedVc)}`);
     }
-    // uncomment to get the QR code
 
-    //console.log("You can use this QR-code to show to your verifiable credentials");
-    //console.log(
-    //    `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${JSON.stringify(signedVc)}`);
+
+    
 
 }
 

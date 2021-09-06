@@ -70,17 +70,12 @@ async function run() {
   let sampleText;
   if(includePersonalData){
     sampleText = prompt("What is the additional text ".yellow);
-  }
-   
+  }   
   console.log(`Generating....`);
   // readWalletInformation
   const personalInformation = await readInfoFromWallet();
-  //console.log(`personal Merkle Root : ${personalInformation.personal_Merkle_Root}`);
-  //console.log(`er : ${personalInformation.er}`);
   let eventPersonalMerkleRoot = personalInformation.personal_Merkle_Root + personalInformation.er;
-  //console.log(`epmrr : ${eventPersonalMerkleRoot}`);
   const merkleHash = await hashHash(eventPersonalMerkleRoot);
-  //console.log(`epmrr hashed : ${merkleHash}`);
   const nowEpoch = luxon.DateTime.now().toMillis();
   let stringWord = nowEpoch;
   let verifierQR =
@@ -88,7 +83,6 @@ async function run() {
   let personalString = "";
   // generateQR
   if (includePersonalData)
-    //personalString = `${personalInformation.firstname} ${personalInformation.lastname}, ${personalInformation.birthdate}//`;
     personalString = `${sampleText}//`;
   const crcCheck = await hashHash(verifierQR + personalString + "SSAsaltQ3v%");
   verifierQR += crcCheck.slice(-5);

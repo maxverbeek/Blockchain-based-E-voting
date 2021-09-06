@@ -18,7 +18,8 @@ const prompt = require("prompt-sync")({ sigint: true });
 const colors = require("colors");
 
 let walletState;
-const node = "https://api.hornet-0.testnet.chrysalis2.com";
+//const node = "https://api.hornet-0.testnet.chrysalis2.com";
+const node = "https://api.lb-0.testnet.chrysalis2.com";
 const commonSideKey =
   "SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSA";
 let privateSideKey = "";
@@ -103,7 +104,6 @@ function presentEventInfo(eventRecord) {
 async function attendeeList(attIndexation) {
   // retrieve a raw list of attendeetransactions
   const client = new SingleNodeClient(node);
-  // console.log(`attendeeList : ${attIndexation}`.green);
   const found = await client.messagesFind(attIndexation);
   return found;
 }
@@ -149,7 +149,6 @@ async function detailedList(attendeeIndex) {
   for (let i = 0; i < aList.count; i++) {
     let attendeeToken = await getAttendee(aList.messageIds[i]);
     let aTokenJson = JSON.parse(attendeeToken);
-    //console.log(aTokenJson);
     if (idList.indexOf(aTokenJson.voterID) === -1) {
       idList.push(aTokenJson.voterID);
       console.log(
@@ -180,10 +179,7 @@ async function voteCount(attendeeIndex){
   const idList = await getVoterListMAM();
   //console.log(idList);
   while (readMAM) {
-    // readMAMrecord
-    // console.log("ReadMAM ===========".red);
     const fetched = await mamFetch(node, aListRoot, mode, sideKey);
-    // console.log(`fetched : ${fetched.message}`.green);
     if (fetched) {
       let fMessage = JSON.parse(TrytesHelper.toAscii(fetched.message));
       aListRoot = fetched.nextRoot;
@@ -192,7 +188,6 @@ async function voteCount(attendeeIndex){
           `Voting Event closed at : ${fMessage.date} =====`.cyan
         );
         readMAM = false;
-        //console.log(finalvoterList);
         for(let i =0;i<finalvoterList.length;i++){
           if(idList.indexOf(finalvoterList[i].voter_id)!=-1){
             vList.push(finalvoterList[i].choice);
@@ -273,7 +268,6 @@ async function closeEvent(attendeeIndex) {
   // makelist, writeList2MAM, writeCloseMessage
   const mode = "restricted";
   const sideKey = commonSideKey;
-
   const attList = [];
   const aList = await attendeeList(attendeeIndex);
   // readAttendeeRecord, decrypt, extract voterID, add2List
@@ -290,9 +284,6 @@ async function closeEvent(attendeeIndex) {
     count: attList.length,
     ids: attList,
   };
-  // console.log("AttendeeListRec ===============".red);
-  // console.log(payloadDataRec);
-
   // loadchannelState from imaginary organiserWallet
   try {
     const currentState = fs.readFileSync("./json/channelState.json");
@@ -302,12 +293,10 @@ async function closeEvent(attendeeIndex) {
   } catch (e) {
     console.error(e);
   }
-
   const mamMessage = createMessage(
     channelState,
     TrytesHelper.fromAscii(JSON.stringify(payloadDataRec))
   );
-
   // Attach the message.
   console.log("Attaching =================".red);
   console.log("Attaching attendeeListMessage to tangle, please wait...");
@@ -355,21 +344,13 @@ async function officialAttendeeList() {
   const sideKey = commonSideKey;
   console.log(`Get attendees ===========`.red);
   let aList = [];
-
-  // Try fetching from MAM
   let readMAM = true;
   let aListRoot = nextMAMRoot;
   while (readMAM) {
-    // readMAMrecord
-    // console.log("ReadMAM ===========".red);
     const fetched = await mamFetch(node, aListRoot, mode, sideKey);
-    // console.log(`fetched : ${fetched.message}`.green);
     if (fetched) {
       let fMessage = JSON.parse(TrytesHelper.toAscii(fetched.message));
       aListRoot = fetched.nextRoot;
-      //DEBUGINFO
-      //   console.log("MAMdata ===================".red);
-      //console.log(`fetched : ${fMessage.count}`.green);
       if (fMessage.message == "Event closed") {
         console.log(
           `Event closed at : ${fMessage.date} =====`.cyan
@@ -377,12 +358,9 @@ async function officialAttendeeList() {
         readMAM = false;
       } else {
         aList = aList.concat(fMessage.ids);
-         //console.log("attendeeList ========");
-         //console.log(`aList : ${aList}`.yellow);
       }
     }
   }
-  //console.log(aList);
   for (const x in aList) {
     console.log(`Voter Token ${1 + parseInt(x)} : ${aList[x]}`);
   }
@@ -393,38 +371,23 @@ async function getVoterListMAM() {
   //show list with attendeeTokens
   const mode = "restricted";
   const sideKey = commonSideKey;
-  //console.log(`Get attendees ===========`.red);
   let aList = [];
-
   // Try fetching from MAM
   let readMAM = true;
   let aListRoot = nextMAMRoot;
   while (readMAM) {
-    // readMAMrecord
-    // console.log("ReadMAM ===========".red);
     const fetched = await mamFetch(node, aListRoot, mode, sideKey);
     // console.log(`fetched : ${fetched.message}`.green);
     if (fetched) {
       let fMessage = JSON.parse(TrytesHelper.toAscii(fetched.message));
       aListRoot = fetched.nextRoot;
-      //DEBUGINFO
-      //   console.log("MAMdata ===================".red);
-      //console.log(`fetched : ${fMessage.count}`.green);
       if (fMessage.message == "Event closed") {
-        // console.log(
-        //   `Event closed at : ${fMessage.date} =====`.cyan
-        // );
         readMAM = false;
       } else {
         aList = aList.concat(fMessage.ids);
       }
     }
   }
-  //console.log(aList);
-  // for (const x in aList) {
-  //   console.log(`Voter Token ${1 + parseInt(x)} : ${aList[x]}`);
-  // }
-  //console.log(`Total final voter : ${aList.length}`.green);
   return aList;
 }
 

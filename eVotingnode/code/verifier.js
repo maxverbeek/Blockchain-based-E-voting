@@ -8,7 +8,8 @@ const fs = require("fs");
 const prompt = require("prompt-sync")({ sigint: true });
 const colors = require("colors");
 
-const node = "https://api.hornet-0.testnet.chrysalis2.com";
+//const node = "https://api.hornet-0.testnet.chrysalis2.com";
+const node = "https://api.lb-0.testnet.chrysalis2.com";
 const commonSideKey =
   "SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSACOMMONKEY9SSA";
 let publicEventRoot = "";
@@ -56,13 +57,6 @@ async function checkQR(code) {
   let rootcode = code.slice(64, -18);
   let timecode = code.slice(-18, -5);
   let rest = idstring + rootcode + timecode + personalInfo + "SSAsaltQ3v%";
-  //DEBUGINFO
-     //console.log(`crccode :${crccode}`);
-     //console.log(`idstring :${idstring}`);
-     //console.log(`rootcode :${rootcode}`);
-     //console.log(`timecode :${timecode}`);
-     //console.log(`rest :${rest}`);
-
   let crcValueString = await hashHash(rest);
   let crcValue = crcValueString.slice(-5);
   if (crccode == crcValue) {

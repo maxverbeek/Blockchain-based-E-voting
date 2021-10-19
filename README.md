@@ -45,7 +45,7 @@ The above steps will build and install all dependencies that are required for th
 5. Now to autheticate whether the credentials are valid we have to execute ```node verify_id```.
 6. This scipt will check if the created credentials are valid.
 7. In the other terminal move to the directory in code/ .
-8. Now to start the E-voting event we have to run organiser.js - ```node organiser.js``` .
+8. Now to start the E-voting event we have to run organiser.js - ```node --unhandled-rejections=warn organiser.js``` .
 9. Now for an citizen to participate in the event we have to run attendee.js - ```node attendee.js``` .
 10. During the run time of the above script, the citizen can choose the corresponding vote.
 11. The above process is repeated for the number of voters.

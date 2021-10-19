@@ -1,6 +1,6 @@
 "use strict";
 
-const { mamFetchAll, TrytesHelper } = require("@iota/mam-chrysalis.js");
+const { mamFetchAll, TrytesHelper } = require("@iota/mam.js");
 const { Converter } = require("@iota/iota.js");
 const { sha256, utf8ToBuffer, bufferToHex } = require("eccrypto-js");
 const luxon = require("luxon");

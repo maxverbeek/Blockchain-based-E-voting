@@ -10,7 +10,7 @@ const {
   TrytesHelper,
   channelRoot,
   mamFetchAll,
-} = require("@iota/mam-chrysalis.js");
+} = require("@iota/mam.js");
 const { retrieveData, SingleNodeClient, Converter } = require("@iota/iota.js");
 const luxon = require("luxon");
 const fs = require("fs");

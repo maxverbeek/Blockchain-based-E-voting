@@ -5,7 +5,7 @@ const {
   createMessage,
   mamAttach,
   TrytesHelper,
-} = require("@iota/mam-chrysalis.js");
+} = require("@iota/mam.js");
 const crypto = require("crypto");
 const luxon = require("luxon");
 const fs = require("fs");

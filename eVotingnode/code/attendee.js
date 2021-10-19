@@ -6,7 +6,7 @@ const {
   TrytesHelper,
   channelRoot,
   createChannel,
-} = require("@iota/mam-chrysalis.js");
+} = require("@iota/mam.js");
 const {
   bufferToHex,
   hexToBuffer,
